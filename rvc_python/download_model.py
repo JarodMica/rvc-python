@@ -13,9 +13,9 @@ def download_rvc_models(this_dir):
         os.makedirs(folder)
     
     files = {
-        "hubert_base.pt": "https://huggingface.co/Daswer123/RVC_Base/resolve/main/hubert_base.pt",
-        "rmvpe.pt": "https://huggingface.co/Daswer123/RVC_Base/resolve/main/rmvpe.pt",
-        "rmvpe.onnx": "https://huggingface.co/Daswer123/RVC_Base/resolve/main/rmvpe.onnx"
+        "hubert_base.pt": "https://huggingface.co/daswer123/rvc_base/blob/bbb6736b97a98df0a87fe3592c0a061c53f0a75f/hubert_base.pt",
+        "rmvpe.pt": "https://huggingface.co/daswer123/rvc_base/blob/bbb6736b97a98df0a87fe3592c0a061c53f0a75f/rmvpe.pt",
+        "rmvpe.onnx": "https://huggingface.co/daswer123/rvc_base/blob/bbb6736b97a98df0a87fe3592c0a061c53f0a75f/rmvpe.onnx"
     }
     
     for filename, url in files.items():
