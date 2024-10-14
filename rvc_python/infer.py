@@ -7,7 +7,16 @@ from rvc_python.configs.config import Config
 from rvc_python.download_model import download_rvc_models
 
 class RVCInference:
-    def __init__(self, models_dir="rvc_models", device="cpu:0"):
+    def __init__(self, models_dir="rvc_models", 
+                 device="cpu:0",
+                 f0method = "rmvpe",
+                 f0up_key = 0,
+                 index_rate = 0.5,
+                 filter_radius = 3,
+                 resample_sr = 48000,
+                 rms_mix_rate = 1,
+                 protect = 0.33
+                 ):
         self.models_dir = models_dir
         self.device = device
         self.lib_dir = os.path.dirname(os.path.abspath(__file__))
@@ -17,13 +26,13 @@ class RVCInference:
         self.models = self._load_available_models()
 
         # Default parameters
-        self.f0method = "harvest"
-        self.f0up_key = 0
-        self.index_rate = 0.5
-        self.filter_radius = 3
-        self.resample_sr = 0
-        self.rms_mix_rate = 1
-        self.protect = 0.33
+        self.f0method = f0method
+        self.f0up_key = f0up_key
+        self.index_rate = index_rate
+        self.filter_radius = filter_radius
+        self.resample_sr = resample_sr,
+        self.rms_mix_rate = rms_mix_rate
+        self.protect = protect
 
         # Download Models
         download_rvc_models(self.lib_dir)
