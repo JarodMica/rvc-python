@@ -6,96 +6,55 @@ Base code is from: https://github.com/daswer123/rvc-python
 
 I have made a few modifications for my workflow and have removed areas of the readme that I am not using.  Please use daswers if you're interested in using this library for other systems or other applications.
 
-## Table of Contents
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Command Line Interface](#command-line-interface)
-  - [Python Module](#python-module)
-  - [API](#api)
-- [Model Management](#model-management)
-- [Options](#options)
-- [Advanced Setup (GPU Acceleration)](#advanced-setup-gpu-acceleration)
-- [Changelog](#changelog)
-- [Contributing](#contributing)
+## Installation Python 3.11 (Windows 10/11)
+1. Create a venv with python 3.11 and activate it
+    ```
+    py -3.11 -m venv venv
+    .\venv\Scripts\activate    
+    ```
+2. Install necessary requirements. We first install the github repo, then download and install a 3.11 compatible fairseq wheels file (as the OG pypy at 0.12.2 is broken for 3.11), then install pytorch at 2.4.0.
 
+    ```
+    pip install git+https://github.com/JarodMica/rvc-python
+    curl -Uri "https://huggingface.co/Jmica/rvc/resolve/main/fairseq-0.12.4-cp311-cp311-win_amd64.whl?download=true" -OutFile "fairseq-0.12.4-cp311-cp311-win_amd64.whl"
+    pip install .\fairseq-0.12.4-cp311-cp311-win_amd64.whl
+    pip install torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 --index-url https://download.pytorch.org/whl/cu121
+    ```
 
-## Installation (Windows 10/11)
+### Python Usage
+Create a new object from RVCInference with the parameters you want set. The defaults are fine, but `rvc_models` is the root directory that will be looked inside of for RVC models.
+
+Inside root, there should be individual directories named after the desired speaker, and in each, there should be a .pth and .index(if using) file like below.
 
 ```
-pip install #enter github repo here
-curl -Uri "https://huggingface.co/Jmica/rvc/resolve/main/fairseq-0.12.4-cp311-cp311-win_amd64.whl?download=true" -OutFile "fairseq-0.12.4-cp311-cp311-win_amd64.whl"
-pip install .\fairseq-0.12.4-cp311-cp311-win_amd64.whl
-pip install torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 --index-url https://download.pytorch.org/whl/cu121
+rvc_models/
+├── name_model1/
+│   ├── name_model1.pth
+│   └── name_model1.index
+└── name_model2/
+    └── name_model2.pth
+
 ```
 
-
-
-
-### Python Module
+An example usage is shown below:
 
 ```python
 from rvc_python.infer import RVCInference
 
-rvc = RVCInference(device="cuda:0")
-rvc.load_model("path/to/model.pth")
-rvc.infer_file("input.wav", "output.wav")
+rvc = RVCInference(models_dir="rvc_models", 
+                   device="cuda:0",
+                   f0_method = "rmvpe",
+                   f0up_key=0,
+                   index_rate=0.5,
+                   filter_radius=3,
+                   resample_sr=48000,
+                   rms_mix_rate=1,
+                   protect=0.33)
+rvc.load_model("name_of_rvc_model")
+rvc.infer_file("input_path.wav", "output_path.wav")
 ```
 
-## Model Management
+## Acknowledgements
 
-Models are stored in the `rvc_models` directory by default. Each model should be in its own subdirectory and contain:
+Thank you to daswer123 for creating the library for easy RVC inference: https://github.com/daswer123/rvc-python
 
-- A `.pth` file (required): The main model file.
-- An `.index` file (optional): For improved voice conversion quality.
-
-Example structure:
-```
-rvc_models/
-├── model1/
-│   ├── model1.pth
-│   └── model1.index
-└── model2/
-    └── model2.pth
-```
-
-You can add new models by:
-1. Manually placing them in the `rvc_models` directory.
-2. Using the `/upload_model` API endpoint to upload a zip file containing the model files.
-3. Using the `/set_models_dir` API endpoint to change the models directory dynamically.
-
-## Options
-
-### Input/Output Options
-- `-i`, `--input`: Input audio file (CLI mode)
-- `-d`, `--dir`: Input directory for batch processing (CLI mode)
-- `-o`, `--output`: Output file or directory
-
-### Model Options
-- `-mp`, `--model`: Path to the RVC model file (required for CLI, optional for API)
-- `-md`, `--models_dir`: Directory containing RVC models (default: `rvc_models` in the current directory)
-- `-ip`, `--index`: Path to the index file (optional)
-- `-v`, `--version`: Model version (v1 or v2)
-
-### Processing Options
-- `-de`, `--device`: Computation device (e.g., "cpu", "cuda:0")
-- `-me`, `--method`: Pitch extraction method (harvest, crepe, rmvpe, pm)
-- `-pi`, `--pitch`: Pitch adjustment in semitones
-- `-ir`, `--index_rate`: Feature search ratio
-- `-fr`, `--filter_radius`: Median filtering radius for pitch
-- `-rsr`, `--resample_sr`: Output resampling rate
-- `-rmr`, `--rms_mix_rate`: Volume envelope mix rate
-- `-pr`, `--protect`: Protection for voiceless consonants
-
-### API Server Options
-- `-p`, `--port`: API server port (default: 5050)
-- `-l`, `--listen`: Allow external connections to API server
-- `-pm`, `--preload-model`: Preload a model when starting the API server (optional)
-
-## Changelog
-
-For a detailed list of changes and updates, please see the [Releases page](https://github.com/daswer123/rvc-python/releases).
-
-## Contributing
-
-Contributions are welcome! Feel free to submit pull requests or open issues for bugs and feature requests.
