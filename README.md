@@ -14,6 +14,8 @@ I have made a few modifications for my workflow and have removed areas of the re
     ```
 2. Install necessary requirements. We first install the github repo, then download and install a 3.11 compatible fairseq wheels file (as the OG pypy at 0.12.2 is broken for 3.11), then install pytorch at 2.4.0.
 
+If you can't use `curl` for some reason, you can manually download the fairseq wheels file here: https://huggingface.co/Jmica/rvc/resolve/main/fairseq-0.12.4-cp311-cp311-win_amd64.whl?download=true then you can skip the `curl` command below
+
     ```
     pip install git+https://github.com/JarodMica/rvc-python
     curl -Uri "https://huggingface.co/Jmica/rvc/resolve/main/fairseq-0.12.4-cp311-cp311-win_amd64.whl?download=true" -OutFile "fairseq-0.12.4-cp311-cp311-win_amd64.whl"
@@ -45,7 +47,7 @@ from rvc_python.infer import RVCInference
 
 rvc = RVCInference(models_dir="rvc_models", 
                    device="cuda:0",
-                   f0_method = "rmvpe",
+                   f0method = "rmvpe",
                    f0up_key=0,
                    index_rate=0.5,
                    filter_radius=3,
