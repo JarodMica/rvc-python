@@ -22,6 +22,8 @@ I have made a few modifications for my workflow and have removed areas of the re
     ```
 
 ### Python Usage
+When you first attempt to use this, hubert and rmvpe models will be downloaded from HF into the rvc_python folder in you venv.  You can find them there.
+
 Create a new object from RVCInference with the parameters you want set. The defaults are fine, but `rvc_models` is the root directory that will be looked inside of for RVC models.
 
 Inside root, there should be individual directories named after the desired speaker, and in each, there should be a .pth and .index(if using) file like below.
