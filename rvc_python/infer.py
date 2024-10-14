@@ -30,7 +30,7 @@ class RVCInference:
         self.f0up_key = f0up_key
         self.index_rate = index_rate
         self.filter_radius = filter_radius
-        self.resample_sr = resample_sr,
+        self.resample_sr = resample_sr
         self.rms_mix_rate = rms_mix_rate
         self.protect = protect
 
