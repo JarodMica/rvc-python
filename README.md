@@ -2,6 +2,10 @@
 
 A Python implementation for using RVC (Retrieval-based Voice Conversion) via console, Python scripts, or API.
 
+Base code is from: https://github.com/daswer123/rvc-python
+
+I have made a few modifications for my workflow and have removed areas of the readme that I am not using.  Please use daswers if you're interested in using this library for other systems or other applications.
+
 ## Table of Contents
 - [Features](#features)
 - [Installation](#installation)
@@ -15,80 +19,18 @@ A Python implementation for using RVC (Retrieval-based Voice Conversion) via con
 - [Changelog](#changelog)
 - [Contributing](#contributing)
 
-## Demo
 
-https://github.com/daswer123/rvc-python/assets/22278673/6ecb590e-8a71-46aa-8ade-ba3fcfd75009
+## Installation (Windows 10/11)
 
-## Features
-
-- Console interface for single file or batch processing
-- Python module for integration into other projects
-- API server for remote processing
-- Support for both CPU and GPU acceleration
-- Dynamic model loading and unloading
-- Flexible model directory management
-
-## Installation
-
-### Basic Installation (CPU only)
-
-```bash
-pip install rvc-python
+```
+pip install #enter github repo here
+curl -Uri "https://huggingface.co/Jmica/rvc/resolve/main/fairseq-0.12.4-cp311-cp311-win_amd64.whl?download=true" -OutFile "fairseq-0.12.4-cp311-cp311-win_amd64.whl"
+pip install .\fairseq-0.12.4-cp311-cp311-win_amd64.whl
+pip install torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 --index-url https://download.pytorch.org/whl/cu121
 ```
 
-### Recommended Installation (with GPU support)
 
-Recommended python version: 3.10
 
-For Windows:
-```bash
-py -3.10 -m venv venv
-venv\Scripts\activate
-pip install rvc-python
-pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://download.pytorch.org/whl/cu118
-```
-
-For Linux:
-```bash
-python3.10 -m venv venv
-source venv/bin/activate
-pip install rvc-python
-pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://download.pytorch.org/whl/cu118
-```
-
-## Usage
-
-### Command Line Interface
-
-The CLI supports two modes: `cli` for direct file processing and `api` for starting an API server.
-
-```bash
-python -m rvc_python [-h] {cli,api} ...
-```
-
-#### CLI Mode
-Process a single file or batch of files:
-
-```bash
-python -m rvc_python cli -i INPUT -o OUTPUT -mp MODEL [options]
-```
-
-Example:
-```bash
-python -m rvc_python cli -i input.wav -o output.wav -mp path/to/model.pth -de cuda:0
-```
-
-#### API Mode
-Start the API server:
-
-```bash
-python -m rvc_python api [-p PORT] [-l] [options]
-```
-
-Example:
-```bash
-python -m rvc_python api -p 5050 -l
-```
 
 ### Python Module
 
@@ -99,124 +41,6 @@ rvc = RVCInference(device="cuda:0")
 rvc.load_model("path/to/model.pth")
 rvc.infer_file("input.wav", "output.wav")
 ```
-
-### API
-
-The API server provides several endpoints for voice conversion and model management. Here's a detailed breakdown of each endpoint:
-
-#### 1. Convert Audio
-- **Endpoint**: `POST /convert`
-- **Description**: Converts an audio file using the currently loaded model.
-- **Request Body**:
-  ```json
-  {
-    "audio_data": "base64_encoded_audio"
-  }
-  ```
-- **Response**: The converted audio file (WAV format)
-- **Example**:
-  ```python
-  import requests
-  import base64
-
-  url = "http://localhost:5050/convert"
-  with open("input.wav", "rb") as audio_file:
-      audio_data = base64.b64encode(audio_file.read()).decode()
-
-  response = requests.post(url, json={"audio_data": audio_data})
-
-  with open("output.wav", "wb") as output_file:
-      output_file.write(response.content)
-  ```
-
-#### 2. List Available Models
-- **Endpoint**: `GET /models`
-- **Description**: Returns a list of all available models.
-- **Response**: JSON array of model names
-- **Example**:
-  ```python
-  response = requests.get("http://localhost:5050/models")
-  models = response.json()
-  print("Available models:", models)
-  ```
-
-#### 3. Load a Model
-- **Endpoint**: `POST /models/{model_name}`
-- **Description**: Loads a specific model for use in conversions.
-- **Response**: Confirmation message
-- **Example**:
-  ```python
-  response = requests.post("http://localhost:5050/models/my_model")
-  print(response.json())
-  ```
-
-#### 4. Get Current Parameters
-- **Endpoint**: `GET /params`
-- **Description**: Retrieves the current parameter settings.
-- **Response**: JSON object with current parameters
-- **Example**:
-  ```python
-  response = requests.get("http://localhost:5050/params")
-  print("Current parameters:", response.json())
-  ```
-
-#### 5. Set Parameters
-- **Endpoint**: `POST /params`
-- **Description**: Updates the parameters for voice conversion.
-- **Request Body**:
-  ```json
-  {
-    "params": {
-      "f0method": "harvest",
-      "f0up_key": 0,
-      "index_rate": 0.5,
-      "filter_radius": 3,
-      "resample_sr": 0,
-      "rms_mix_rate": 0.25,
-      "protect": 0.33
-    }
-  }
-  ```
-- **Response**: Confirmation message
-- **Example**:
-  ```python
-  params = {
-    "f0method": "harvest",
-    "f0up_key": 2,
-    "protect": 0.5
-  }
-  response = requests.post("http://localhost:5050/params", json={"params": params})
-  print(response.json())
-  ```
-
-#### 6. Upload a New Model
-- **Endpoint**: `POST /upload_model`
-- **Description**: Uploads a new model (as a zip file) to the server.
-- **Request**: Multipart form data with a zip file
-- **Response**: Confirmation message
-- **Example**:
-  ```python
-  with open("new_model.zip", "rb") as zip_file:
-      files = {"file": ("new_model.zip", zip_file)}
-      response = requests.post("http://localhost:5050/upload_model", files=files)
-  print(response.json())
-  ```
-
-#### 7. Set Computation Device
-- **Endpoint**: `POST /set_device`
-- **Description**: Sets the device (CPU/GPU) for computations.
-- **Request Body**:
-  ```json
-  {
-    "device": "cuda:0"
-  }
-  ```
-- **Response**: Confirmation message
-- **Example**:
-  ```python
-  response = requests.post("http://localhost:5050/set_device", json={"device": "cuda:0"})
-  print(response.json())
-  ```
 
 ## Model Management
 
