@@ -20,7 +20,7 @@ classifiers = [
 dependencies = [
   "ffmpeg-python",
   "soundfile",
-  "omegaconf==2.0.6",
+  "omegaconf==2.3.0",
   "requests",
   "pyworld",
   "torchcrepe",
