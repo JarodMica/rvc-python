@@ -1,7 +1,7 @@
 import os
 
 from fairseq import checkpoint_utils
-
+from rvc_python.lib.jit.get_hubert import get_hubert_model
 def get_index_path_from_model(sid):
     return next(
         (
@@ -18,13 +18,11 @@ def get_index_path_from_model(sid):
     )
 
 
-def load_hubert(config,lib_dir):
-    models, _, _ = checkpoint_utils.load_model_ensemble_and_task(
-        [f"{lib_dir}/base_model/hubert_base.pt"],
-        suffix="",
+def load_hubert(config, lib_dir):
+    hubert_model = get_hubert_model(
+        model_path=os.path.join(lib_dir, "base_model", "hubert_base.pt"),
+        device=config.device,
     )
-    hubert_model = models[0]
-    hubert_model = hubert_model.to(config.device)
     if config.is_half:
         hubert_model = hubert_model.half()
     else:

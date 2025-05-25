@@ -112,6 +112,9 @@ class RVCInference:
             f0_file="",
             file_index2=""
         )
+        if isinstance(wav_opt, tuple):
+            err, _ = wav_opt
+            raise Exception(err)
 
         wavfile.write(output_path, self.vc.tgt_sr, wav_opt)
         return output_path

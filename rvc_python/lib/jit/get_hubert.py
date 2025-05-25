@@ -283,6 +283,8 @@ def get_hubert_model(
         padding_mask=None,
         tgt_layer=None,
         min_layer=0,
+        corpus_key=None,
+        # **kwargs,
     ):
         return extract_features(
             hubert_model.encoder,

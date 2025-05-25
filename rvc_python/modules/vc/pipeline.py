@@ -219,8 +219,8 @@ class Pipeline(object):
         }
         t0 = ttime()
         with torch.no_grad():
-            logits = model.extract_features(**inputs)
-            feats = model.final_proj(logits[0]) if version == "v1" else logits[0]
+            features_tensor, _ = model.extract_features(**inputs)
+            feats = model.final_proj(features_tensor) if version == "v1" else features_tensor
         if protect < 0.5 and pitch is not None and pitchf is not None:
             feats0 = feats.clone()
         if (
